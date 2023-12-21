@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20231171_2-1" author="atrigo">
+        <preConditions onFail="MARK_RAN" onSqlOutput="TEST">
+            <not>
+                <tableExists tableName="task"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="task">
+            <column name="task_id" type="uuid" defaultValueComputed="uuid_generate_v4()" remarks="Identifier of the task">
+                <constraints primaryKey="true" primaryKeyName="task_id_pk"/>
+            </column>
+            <column name="title" type="varchar(50)" remarks="Title of the task">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(50)" remarks="Description of the task"/>
+            <column name="start_date" type="timestamp" remarks="Start date of the task"/>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="task"/>
+        </rollback>
+
+        <comment>Creates the task table</comment>
+    </changeSet>
+
+</databaseChangeLog>

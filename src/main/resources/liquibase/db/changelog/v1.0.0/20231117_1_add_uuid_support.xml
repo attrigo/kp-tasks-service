@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20231117_1-0" author="atrigo">
+        <preConditions onFail="MARK_RAN" onSqlOutput="TEST">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM pg_available_extensions WHERE name = 'uuid-ossp' AND installed_version IS NOT NULL</sqlCheck>
+        </preConditions>
+
+        <sql>CREATE EXTENSION IF NOT EXISTS "uuid-ossp"</sql>
+
+        <rollback>
+            <sql>DROP EXTENSION IF EXISTS "uuid-ossp"</sql>
+        </rollback>
+
+        <comment>Adds support for UUID types to the database</comment>
+    </changeSet>
+
+</databaseChangeLog>

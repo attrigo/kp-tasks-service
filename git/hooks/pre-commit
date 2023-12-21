@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Shell exits with error if any maven command exits with a non-zero status
+set -e
+
+echo "Checking code style:"
+
+mvn spotless:check
+
+echo ""

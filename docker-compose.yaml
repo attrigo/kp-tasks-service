@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  kp-tasks-postgres-db:
+    image: 'postgres:latest'
+    container_name: kp-tasks-postgres-db
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_DB=tasksdb
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - tasks-postgres-db-data:/data/db
+
+  kp-tasks-service:
+    build: .
+    image: 'kp-tasks-service:0.1.0-SNAPSHOT'
+    container_name: kp-tasks-service
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      - DB_HOST=kp-tasks-postgres-db
+      - DB_PORT=5432
+      - DB_NAME=tasksdb
+      - DB_USERNAME=user
+      - DB_PASSWORD=secret
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - kp-tasks-postgres-db
+
+volumes:
+  tasks-postgres-db-data:
