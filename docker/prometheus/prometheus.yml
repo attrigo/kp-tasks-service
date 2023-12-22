@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: [ 'kp-tasks-prometheus:9090' ]
+  - job_name: 'kp-tasks-service'
+    metrics_path: '/kp-tasks-service/actuator/prometheus'
+    static_configs:
+      - targets: [ 'kp-tasks-service:8080' ]

@@ -30,5 +30,34 @@ services:
     depends_on:
       - kp-tasks-postgres-db
 
+  kp-tasks-prometheus:
+    image: prom/prometheus
+    container_name: kp-tasks-prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - kp-tasks-service
+
+  kp-tasks-grafana:
+    image: grafana/grafana
+    container_name: kp-tasks-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=secret
+    volumes:
+      - ./docker/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./docker/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+    depends_on:
+      - kp-tasks-service
+      - kp-tasks-prometheus
+
 volumes:
   tasks-postgres-db-data:

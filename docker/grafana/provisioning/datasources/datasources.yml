@@ -1,0 +1,10 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://kp-tasks-prometheus:9090
+    editable: false
+    jsonData:
+      httpMethod: POST
