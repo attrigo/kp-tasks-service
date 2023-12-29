@@ -24,6 +24,7 @@
         <java.version>21</java.version>
 
         <!-- Dependencies -->
+        <loki-logback-appender.version>1.4.2</loki-logback-appender.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <openapi.version>2.2.0</openapi.version>
         <lombok.version>1.18.30</lombok.version>
@@ -58,6 +59,19 @@
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.loki4j</groupId>
+            <artifactId>loki-logback-appender</artifactId>
+            <version>${loki-logback-appender.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing-bridge-brave</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-reporter-brave</artifactId>
         </dependency>
         <!-- Database Dependencies -->
         <dependency>

@@ -18,6 +18,8 @@ package com.bcn.kp;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import reactor.core.publisher.Hooks;
+
 /**
  * Application entry point.
  *
@@ -33,6 +35,7 @@ public class KpTasksServiceApplication {
      * @param args command line arguments.
      */
     public static void main(String[] args) {
+        Hooks.enableAutomaticContextPropagation();
         SpringApplication.run(KpTasksServiceApplication.class, args);
     }
 

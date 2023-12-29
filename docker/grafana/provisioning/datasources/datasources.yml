@@ -14,3 +14,38 @@ datasources:
     apiVersion: 1
     jsonData:
       httpMethod: POST
+      exemplarTraceIdDestinations:
+        - name: trace_id
+          datasourceUid: kp-tempo-ds
+  - name: Tempo
+    type: tempo
+    uid: kp-tempo-ds
+    access: proxy
+    orgId: 1
+    url: http://kp-tasks-tempo:3200
+    basicAuth: false
+    isDefault: false
+    version: 1
+    editable: false
+    apiVersion: 1
+    jsonData:
+      httpMethod: GET
+      tracesToLogs:
+        datasourceUid: 'kp-loki-ds'
+  - name: Loki
+    type: loki
+    uid: kp-loki-ds
+    access: proxy
+    orgId: 1
+    url: http://kp-tasks-loki:3100
+    basicAuth: false
+    isDefault: true
+    version: 1
+    editable: false
+    apiVersion: 1
+    jsonData:
+      derivedFields:
+        - datasourceUid: kp-tempo-ds
+          matcherRegex: \[.+,(.+?),
+          name: TraceID
+          url: $${__value.raw}

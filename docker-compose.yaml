@@ -34,14 +34,40 @@ services:
     image: prom/prometheus
     container_name: kp-tasks-prometheus
     restart: unless-stopped
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+    command:
+      - --enable-feature=exemplar-storage
+      - --config.file=/etc/prometheus/prometheus.yml
     volumes:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  kp-tasks-tempo:
+    image: grafana/tempo
+    container_name: kp-tasks-tempo
+    restart: unless-stopped
+    ports:
+      - "14268"  # Jaeger
+      - "9411:9411" # Zipkin
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./docker/tempo/tempo.yaml:/etc/tempo.yaml:ro
+      - tasks-tempo-data:/tmp/tempo
+
+  kp-tasks-loki:
+    image: grafana/loki
+    container_name: kp-tasks-loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    command: [ "-config.file=/etc/loki/local-config.yaml" ]
+    environment:
+      - JAEGER_AGENT_HOST=tempo
+      - JAEGER_ENDPOINT=http://tempo:14268/api/traces
+      - JAEGER_SAMPLER_TYPE=const
+      - JAEGER_SAMPLER_PARAM=1
     depends_on:
-      - kp-tasks-service
+      - kp-tasks-tempo
 
   kp-tasks-grafana:
     image: grafana/grafana
@@ -56,8 +82,9 @@ services:
       - ./docker/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
       - ./docker/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
     depends_on:
-      - kp-tasks-service
+      - kp-tasks-loki
       - kp-tasks-prometheus
 
 volumes:
   tasks-postgres-db-data:
+  tasks-tempo-data:

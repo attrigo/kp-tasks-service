@@ -17,6 +17,8 @@ package com.bcn.kp.task;
 
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +34,8 @@ import reactor.core.publisher.Mono;
  */
 @RestController
 public class TaskRestController implements TaskRestAPI {
+
+    private static final Logger logger = LoggerFactory.getLogger(TaskRestController.class);
 
     private final TaskService taskService;
 
@@ -60,12 +64,16 @@ public class TaskRestController implements TaskRestAPI {
 
     @Override
     public Mono<TaskDTO> createTask(TaskDTO taskDTO) {
-        return this.taskService.create(taskDTO);
+        logger.info("Creating a new task ...");
+        return this.taskService.create(taskDTO)
+                               .doOnSuccess(taskCreated -> logger.info("Task {} created successfully", taskCreated.getId()));
     }
 
     @Override
     public Mono<ResponseEntity<TaskDTO>> updateTask(UUID id, TaskDTO taskDTO) {
+        logger.info("Updating the task {} ...", id);
         return this.taskService.update(id, taskDTO)
+                               .doOnSuccess(taskUpdated -> logger.info("Task {} updated successfully", id))
                                .map(ResponseEntity::ok)
                                .switchIfEmpty(Mono.just(ResponseEntity.notFound()
                                                                       .build()));
@@ -73,10 +81,13 @@ public class TaskRestController implements TaskRestAPI {
 
     @Override
     public Mono<ResponseEntity<Void>> deleteTaskById(UUID id) {
+        logger.info("Deleting the task {} ...", id);
         return this.taskService.deleteById(id)
+                               .doOnSuccess(taskHasBeenDeleted -> logger.info("Task {} deleted successfully", id))
                                .map(taskHasBeenDeleted -> ResponseEntity.status(
                                        Boolean.TRUE.equals(taskHasBeenDeleted) ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND)
                                                                         .build());
+
     }
 
 }
